@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import SingleDisplay from './components/SingleDisplay';
+import MultipleCountries from './components/MultipleCountries';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [countries, setCountries] = useState(null)
+  const [filter, setFilter] = useState('')
+
+
+  useEffect(() => { 
+    axios
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => {
+        setCountries(response.data)
+      })
+  }, [])
+
+
+  let display = null
+  if (countries) {
+    let filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
+
+    if (filteredCountries.length > 10) {
+      display = <p>Too many matches, specify another filter</p>
+    } else if (filteredCountries.length === 1) {
+      const country = filteredCountries[0]
+      display = <SingleDisplay country={country} />
+    } else {
+      display = <MultipleCountries countries={filteredCountries} />
+    }
+  }
+
 
   return (
-    <>
+    <div>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        find countries: <input
+          value={filter}
+          onChange={(event) => setFilter(event.target.value)}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div>
+        {display}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
