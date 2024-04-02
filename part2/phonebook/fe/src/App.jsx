@@ -50,6 +50,18 @@ const App = () => {
     ? persons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()))
     : persons;
   
+  
+  const handleDelete = (id) => { 
+    const person = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${person.name}?`)) { 
+      personService
+        .remove(id)
+        .then(() => { 
+          setPersons(persons.filter((person) => person.id !== id));
+        });
+    }
+  }
+  
 
   return (
     <div>
@@ -72,6 +84,7 @@ const App = () => {
       <h3>Numbers</h3>
       <Persons
         persons={personsToShow}
+        handleDelete={handleDelete}
       />
 
     </div>
