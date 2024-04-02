@@ -6,12 +6,20 @@ const App = () => {
 
   const handleSubmit = (e) => { 
     e.preventDefault();
+
+    if (persons.some((person) => person.name.toLowerCase() === newName.toLowerCase())) { 
+      alert(`${newName} is already added to phonebook`);
+      setNewName("");
+      return;
+    }
+
     setPersons([...persons, { name: newName }]);
     setNewName("");
   }
 
   return (
     <div>
+
       <h2>Phonebook</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -24,10 +32,12 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
+
       <h2>Numbers</h2>
       {persons.map((person) => (
         <div key={person.name}>{person.name}</div>
       ))}
+
     </div>
   );
 };
