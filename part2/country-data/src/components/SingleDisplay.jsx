@@ -9,6 +9,8 @@ const SingleDisplay = ({ country }) => {
                 {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
             </ul>
             <img src={country.flags.png} alt={country.name.common} width="200" />
+
+            
         </div>
     )
 }

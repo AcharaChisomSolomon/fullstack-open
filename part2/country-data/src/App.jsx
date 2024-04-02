@@ -5,6 +5,7 @@ import MultipleCountries from './components/MultipleCountries';
 
 const App = () => {
   const [countries, setCountries] = useState(null)
+  const [filteredCountries, setFilteredCountries] = useState([])
   const [filter, setFilter] = useState('')
 
 
@@ -12,22 +13,40 @@ const App = () => {
     axios
       .get('https://restcountries.com/v3.1/all')
       .then(response => {
-        setCountries(response.data)
+        setCountries(response.data.map((country, index) => ({
+          ...country,
+          id: index,
+          toBeShown: false
+        })))
       })
   }, [])
 
 
+  const handleDisplay = (id) => { 
+    let country = filteredCountries.find(country => country.id === id)
+    let newCountry = { ...country, toBeShown: !country.toBeShown }
+
+    setFilteredCountries(filteredCountries.map(country => country.id !== id ? {...country, toBeShown: false} : newCountry))
+  }
+
+
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value)
+    setFilteredCountries(countries.filter(country => country.name.common.toLowerCase().includes(event.target.value.toLowerCase())))
+  }
+
+
   let display = null
   if (countries) {
-    let filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
-
     if (filteredCountries.length > 10) {
       display = <p>Too many matches, specify another filter</p>
     } else if (filteredCountries.length === 1) {
       const country = filteredCountries[0]
       display = <SingleDisplay country={country} />
     } else {
-      display = <MultipleCountries countries={filteredCountries} />
+      display = <MultipleCountries
+        handleDisplay={handleDisplay}
+        countries={filteredCountries} />
     }
   }
 
@@ -37,7 +56,7 @@ const App = () => {
       <div>
         find countries: <input
           value={filter}
-          onChange={(event) => setFilter(event.target.value)}
+          onChange={handleFilterChange}
         />
       </div>
       <div>
