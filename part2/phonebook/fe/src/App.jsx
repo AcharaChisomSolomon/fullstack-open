@@ -39,6 +39,12 @@ const App = () => {
             setTimeout(() => { 
               setNotification(null);
             }, 5000);
+          })
+          .catch((error) => { 
+            setNotification({ type: "error", message: error.response.data.error });
+            setTimeout(() => { 
+              setNotification(null);
+            }, 5000);
           });
       }
       return;
@@ -56,6 +62,12 @@ const App = () => {
         setNewName("");
         setNewNumber("");
         setNotification({ type: "success", message: `Added ${returnedPerson.name}` });
+        setTimeout(() => { 
+          setNotification(null);
+        }, 5000);
+      })
+      .catch((error) => { 
+        setNotification({ type: "error", message: error.response.data.error });
         setTimeout(() => { 
           setNotification(null);
         }, 5000);
